@@ -9,7 +9,9 @@ import morgan from 'morgan';
 import 'dotenv/config';
 
 import { pool } from './config/db';
+import { requireAuth } from './middleware/requireAuth';
 import healthRouter from './routes/health';
+import authRouter from './routes/auth';
 import mosquesRouter from './routes/mosques';
 import usersRouter from './routes/users';
 import weeklyCollectionsRouter from './routes/weeklyCollections';
@@ -27,11 +29,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/health', healthRouter);
-app.use('/api/mosques', mosquesRouter);
-app.use('/api/users', usersRouter);
-app.use('/api/weekly-collections', weeklyCollectionsRouter);
-app.use('/api/fund-requests', fundRequestsRouter);
-app.use('/api/payment-accounts', paymentAccountsRouter);
+app.use('/api/auth', authRouter);
+
+app.use('/api/mosques', requireAuth, mosquesRouter);
+app.use('/api/users', requireAuth, usersRouter);
+app.use('/api/weekly-collections', requireAuth, weeklyCollectionsRouter);
+app.use('/api/fund-requests', requireAuth, fundRequestsRouter);
+app.use('/api/payment-accounts', requireAuth, paymentAccountsRouter);
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: 'Not found' });
