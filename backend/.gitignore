@@ -4,6 +4,3 @@ dist/
 *.log
 .DS_Store
 npm-debug.log*
-backend/node_modules/
-backend/dist/
-backend/.env
