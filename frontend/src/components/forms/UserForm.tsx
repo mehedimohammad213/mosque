@@ -3,7 +3,7 @@
 import { type FormEvent, useEffect, useState, useTransition } from "react";
 import { ApiError, createUser, listMosques, updateUser } from "@/lib/api";
 import type { Mosque, User, UserRole } from "@/lib/types";
-import { Alert, Field, fieldClass } from "@/components/ui";
+import { Alert, DetailField, DetailGrid, Field, fieldClass } from "@/components/ui";
 import type { FormMode } from "@/components/forms/MosqueForm";
 
 const roles: UserRole[] = ["admin", "mosque_admin"];
@@ -65,34 +65,52 @@ export function UserForm({
     });
   }
 
+  if (readOnly) {
+    const mosqueName =
+      mosques.find((m) => m.id === initial?.mosque_id)?.name ||
+      (initial?.mosque_id ? `#${initial.mosque_id}` : null);
+    return (
+      <DetailGrid>
+        <DetailField label="Name" value={initial?.name} className="sm:col-span-2" />
+        <DetailField label="Phone" value={initial?.phone} />
+        <DetailField label="Email" value={initial?.email} />
+        <DetailField label="Role" value={initial?.role} />
+        <DetailField label="Mosque" value={mosqueName} />
+        <DetailField
+          label="Active"
+          value={initial?.is_active === false ? "No" : "Yes"}
+        />
+      </DetailGrid>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
       <Field label="Name *" className="sm:col-span-2">
-        <input name="name" required disabled={readOnly} defaultValue={initial?.name || ""} className={fieldClass} />
+        <input name="name" required defaultValue={initial?.name || ""} className={fieldClass} />
       </Field>
       <Field label="Phone *">
-        <input name="phone" required disabled={readOnly} defaultValue={initial?.phone || ""} className={fieldClass} />
+        <input name="phone" required defaultValue={initial?.phone || ""} className={fieldClass} />
       </Field>
       <Field label={mode === "create" ? "Password *" : "New password"}>
         <input
           name="password"
           type="password"
           required={mode === "create"}
-          disabled={readOnly}
           className={fieldClass}
           placeholder={mode === "edit" ? "Leave blank to keep" : ""}
         />
       </Field>
       <Field label="Email">
-        <input name="email" type="email" disabled={readOnly} defaultValue={initial?.email || ""} className={fieldClass} />
+        <input name="email" type="email" defaultValue={initial?.email || ""} className={fieldClass} />
       </Field>
       <Field label="Role">
-        <select name="role" disabled={readOnly} defaultValue={initial?.role || "mosque_admin"} className={fieldClass}>
+        <select name="role" defaultValue={initial?.role || "mosque_admin"} className={fieldClass}>
           {roles.map((r) => <option key={r} value={r}>{r}</option>)}
         </select>
       </Field>
       <Field label="Mosque">
-        <select name="mosque_id" disabled={readOnly} defaultValue={initial?.mosque_id ?? ""} className={fieldClass}>
+        <select name="mosque_id" defaultValue={initial?.mosque_id ?? ""} className={fieldClass}>
           <option value="">None</option>
           {mosques.map((m) => (
             <option key={m.id} value={m.id}>{m.name}</option>
@@ -102,7 +120,6 @@ export function UserForm({
       <Field label="Active">
         <select
           name="is_active"
-          disabled={readOnly}
           defaultValue={initial?.is_active === false ? "false" : "true"}
           className={fieldClass}
         >
@@ -111,16 +128,14 @@ export function UserForm({
         </select>
       </Field>
       {error ? <div className="sm:col-span-2"><Alert>{error}</Alert></div> : null}
-      {!readOnly ? (
-        <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
-          <button type="submit" disabled={pending} className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--bg-deep)] disabled:opacity-60">
-            {pending ? "Saving…" : mode === "create" ? "Create" : "Save changes"}
-          </button>
-          <button type="button" onClick={onCancel} className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm text-[var(--ink-muted)]">
-            Cancel
-          </button>
-        </div>
-      ) : null}
+      <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
+        <button type="submit" disabled={pending} className="rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition hover:bg-[var(--accent-soft)] disabled:opacity-60">
+          {pending ? "Saving…" : mode === "create" ? "Create" : "Save changes"}
+        </button>
+        <button type="button" onClick={onCancel} className="rounded-lg border border-[var(--line)] px-5 py-2.5 text-sm font-medium text-[var(--ink-muted)] transition hover:text-[var(--ink)]">
+          Cancel
+        </button>
+      </div>
     </form>
   );
 }

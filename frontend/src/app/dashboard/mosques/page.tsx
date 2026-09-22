@@ -1,15 +1,27 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { ApiError, deleteMosque, listMosques } from "@/lib/api";
 import type { Mosque } from "@/lib/types";
-import { Alert, DataTable, EmptyState, PageHeader } from "@/components/ui";
+import {
+  Alert,
+  DataTable,
+  EmptyState,
+  ListFooter,
+  ListPanel,
+  ListToolbar,
+  PageHeader,
+  RowActions,
+  StatCards,
+  StatusBadge,
+} from "@/components/ui";
 import { Drawer } from "@/components/Drawer";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { MosqueForm, type FormMode } from "@/components/forms/MosqueForm";
 
 export default function MosquesPage() {
   const [rows, setRows] = useState<Mosque[]>([]);
+  const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [drawer, setDrawer] = useState<{
@@ -53,6 +65,17 @@ export default function MosquesPage() {
     });
   }
 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((row) =>
+      [row.name, row.district, row.division, row.status]
+        .join(" ")
+        .toLowerCase()
+        .includes(q)
+    );
+  }, [rows, search]);
+
   const titles = {
     create: "Create mosque",
     edit: "Update mosque",
@@ -64,54 +87,100 @@ export default function MosquesPage() {
       <PageHeader
         title="Mosque"
         description="List and manage registered mosques."
-        actionLabel="Add mosque"
-        onAction={() => setDrawer({ open: true, mode: "create", item: null })}
+      />
+      <StatCards
+        items={[
+          { label: "Total mosques", value: rows.length },
+          {
+            label: "Verified",
+            value: rows.filter((r) => r.status === "verified").length,
+          },
+          {
+            label: "Pending",
+            value: rows.filter((r) => r.status === "pending").length,
+          },
+        ]}
       />
       {error ? (
         <div className="mb-4">
           <Alert>{error}</Alert>
         </div>
       ) : null}
-      {rows.length === 0 && !pending ? (
-        <EmptyState title="No mosques" hint="Create the first mosque." />
-      ) : (
-        <DataTable headers={["Name", "Location", "Status", "Actions"]}>
-          {rows.map((row) => (
-            <tr key={row.id} className="border-b border-[var(--line)] last:border-0">
-              <td className="px-4 py-3 text-[var(--ink)]">{row.name}</td>
-              <td className="px-4 py-3 text-[var(--ink-muted)]">
-                {row.district}, {row.division}
-              </td>
-              <td className="px-4 py-3 text-[var(--ink-muted)]">{row.status}</td>
-              <td className="px-4 py-3">
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setDrawer({ open: true, mode: "view", item: row })}
-                    className="text-[var(--ink-muted)] hover:text-[var(--ink)]"
+      <ListPanel
+        footer={
+          <ListFooter
+            from={filtered.length ? 1 : 0}
+            to={filtered.length}
+            total={filtered.length}
+          />
+        }
+      >
+        <ListToolbar
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search mosques..."
+          actionLabel="Add mosque"
+          onAction={() => setDrawer({ open: true, mode: "create", item: null })}
+        />
+        {filtered.length === 0 && !pending ? (
+          <EmptyState title="No mosques" hint="Create the first mosque." />
+        ) : (
+          <DataTable headers={["Name", "Location", "Status", "Actions"]}>
+            {filtered.map((row) => (
+              <tr key={row.id}>
+                <td className="px-4 py-3.5 font-medium text-[var(--ink)]">
+                  {row.name}
+                </td>
+                <td className="px-4 py-3.5 text-[var(--ink-muted)]">
+                  {row.district}, {row.division}
+                </td>
+                <td className="px-4 py-3.5">
+                  <StatusBadge
+                    tone={
+                      row.status === "verified"
+                        ? "ok"
+                        : row.status === "rejected"
+                          ? "danger"
+                          : "muted"
+                    }
                   >
-                    View
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDrawer({ open: true, mode: "edit", item: row })}
-                    className="text-[var(--accent-soft)] hover:text-[var(--ink)]"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRemoveItem(row)}
-                    className="text-[var(--danger)] hover:opacity-80"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </DataTable>
-      )}
+                    {row.status}
+                  </StatusBadge>
+                </td>
+                <td className="px-4 py-3.5">
+                  <RowActions>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setDrawer({ open: true, mode: "view", item: row })
+                      }
+                      className="text-sm text-[var(--ink-muted)] hover:text-[var(--ink)]"
+                    >
+                      View
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setDrawer({ open: true, mode: "edit", item: row })
+                      }
+                      className="text-sm text-[var(--accent)] hover:text-[var(--accent-soft)]"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRemoveItem(row)}
+                      className="text-sm text-[var(--danger)] hover:opacity-80"
+                    >
+                      Delete
+                    </button>
+                  </RowActions>
+                </td>
+              </tr>
+            ))}
+          </DataTable>
+        )}
+      </ListPanel>
 
       <Drawer
         open={drawer.open}

@@ -3,7 +3,7 @@
 import { type FormEvent, useEffect, useState, useTransition } from "react";
 import { ApiError, createFundRequest, listMosques, updateFundRequest } from "@/lib/api";
 import type { FundRequest, FundRequestStatus, Mosque } from "@/lib/types";
-import { Alert, Field, fieldClass } from "@/components/ui";
+import { Alert, DetailField, DetailGrid, Field, fieldClass } from "@/components/ui";
 import type { FormMode } from "@/components/forms/MosqueForm";
 
 const statuses: FundRequestStatus[] = [
@@ -68,54 +68,72 @@ export function RequestForm({
     });
   }
 
+  if (readOnly) {
+    const mosqueName =
+      mosques.find((m) => m.id === initial?.mosque_id)?.name ||
+      (initial?.mosque_id ? `#${initial.mosque_id}` : null);
+    return (
+      <DetailGrid>
+        <DetailField label="Mosque" value={mosqueName} />
+        <DetailField label="Fund year" value={initial?.fund_year} />
+        <DetailField label="Title" value={initial?.title} className="sm:col-span-2" />
+        <DetailField label="Description" value={initial?.description} className="sm:col-span-2" />
+        <DetailField label="Required amount" value={initial?.required_amount} />
+        <DetailField label="Status" value={initial?.status} />
+        <DetailField label="Start date" value={dateValue(initial?.start_date)} />
+        <DetailField label="Needed by" value={dateValue(initial?.needed_by)} />
+        <DetailField label="Contact person" value={initial?.contact_person} />
+        <DetailField label="Contact phone" value={initial?.contact_phone} />
+      </DetailGrid>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
       <Field label="Mosque *">
-        <select name="mosque_id" required disabled={readOnly} defaultValue={initial?.mosque_id || ""} className={fieldClass}>
+        <select name="mosque_id" required defaultValue={initial?.mosque_id || ""} className={fieldClass}>
           <option value="">Select</option>
           {mosques.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
         </select>
       </Field>
       <Field label="Fund year *">
-        <input name="fund_year" type="number" required disabled={readOnly} defaultValue={initial?.fund_year || new Date().getFullYear()} className={fieldClass} />
+        <input name="fund_year" type="number" required defaultValue={initial?.fund_year || new Date().getFullYear()} className={fieldClass} />
       </Field>
       <Field label="Title *" className="sm:col-span-2">
-        <input name="title" required disabled={readOnly} defaultValue={initial?.title || ""} className={fieldClass} />
+        <input name="title" required defaultValue={initial?.title || ""} className={fieldClass} />
       </Field>
       <Field label="Description *" className="sm:col-span-2">
-        <textarea name="description" required rows={4} disabled={readOnly} defaultValue={initial?.description || ""} className={fieldClass} />
+        <textarea name="description" required rows={4} defaultValue={initial?.description || ""} className={fieldClass} />
       </Field>
       <Field label="Required amount *">
-        <input name="required_amount" type="number" step="0.01" required disabled={readOnly} defaultValue={initial?.required_amount || ""} className={fieldClass} />
+        <input name="required_amount" type="number" step="0.01" required defaultValue={initial?.required_amount || ""} className={fieldClass} />
       </Field>
       <Field label="Status">
-        <select name="status" disabled={readOnly} defaultValue={initial?.status || "draft"} className={fieldClass}>
+        <select name="status" defaultValue={initial?.status || "draft"} className={fieldClass}>
           {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
       </Field>
       <Field label="Start date">
-        <input name="start_date" type="date" disabled={readOnly} defaultValue={dateValue(initial?.start_date)} className={fieldClass} />
+        <input name="start_date" type="date" defaultValue={dateValue(initial?.start_date)} className={fieldClass} />
       </Field>
       <Field label="Needed by">
-        <input name="needed_by" type="date" disabled={readOnly} defaultValue={dateValue(initial?.needed_by)} className={fieldClass} />
+        <input name="needed_by" type="date" defaultValue={dateValue(initial?.needed_by)} className={fieldClass} />
       </Field>
       <Field label="Contact person">
-        <input name="contact_person" disabled={readOnly} defaultValue={initial?.contact_person || ""} className={fieldClass} />
+        <input name="contact_person" defaultValue={initial?.contact_person || ""} className={fieldClass} />
       </Field>
       <Field label="Contact phone">
-        <input name="contact_phone" disabled={readOnly} defaultValue={initial?.contact_phone || ""} className={fieldClass} />
+        <input name="contact_phone" defaultValue={initial?.contact_phone || ""} className={fieldClass} />
       </Field>
       {error ? <div className="sm:col-span-2"><Alert>{error}</Alert></div> : null}
-      {!readOnly ? (
-        <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
-          <button type="submit" disabled={pending} className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--bg-deep)] disabled:opacity-60">
-            {pending ? "Saving…" : mode === "create" ? "Create" : "Save changes"}
-          </button>
-          <button type="button" onClick={onCancel} className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm text-[var(--ink-muted)]">
-            Cancel
-          </button>
-        </div>
-      ) : null}
+      <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
+        <button type="submit" disabled={pending} className="rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition hover:bg-[var(--accent-soft)] disabled:opacity-60">
+          {pending ? "Saving…" : mode === "create" ? "Create" : "Save changes"}
+        </button>
+        <button type="button" onClick={onCancel} className="rounded-lg border border-[var(--line)] px-5 py-2.5 text-sm font-medium text-[var(--ink-muted)] transition hover:text-[var(--ink)]">
+          Cancel
+        </button>
+      </div>
     </form>
   );
 }

@@ -9,7 +9,7 @@ import {
   listUsers,
   listWeeklyCollections,
 } from "@/lib/api";
-import { PageHeader } from "@/components/ui";
+import { PageHeader, StatCards } from "@/components/ui";
 
 export default function DashboardHomePage() {
   const [stats, setStats] = useState({
@@ -58,17 +58,24 @@ export default function DashboardHomePage() {
         title="Overview"
         description="Manage mosques, users, payments, fund requests, and weekly collections."
       />
+      <StatCards
+        items={[
+          { label: "Total mosques", value: stats.mosques },
+          { label: "Total users", value: stats.users },
+          { label: "Total payments", value: stats.payments },
+        ]}
+      />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map((card) => (
           <Link
             key={card.href}
             href={card.href}
-            className="rounded-2xl border border-[var(--line)] bg-[var(--bg-lift)]/40 p-5 transition hover:border-[var(--accent)]/40"
+            className="rounded-xl border border-[var(--line)] bg-[var(--bg-mid)] p-5 shadow-[var(--shadow-sm)] transition hover:border-[var(--accent)]/40 hover:shadow-[var(--shadow-md)]"
           >
-            <p className="text-xs uppercase tracking-[0.16em] text-[var(--ink-muted)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-muted)]">
               {card.label}
             </p>
-            <p className="mt-3 font-[family-name:var(--font-display)] text-4xl text-[var(--ink)]">
+            <p className="mt-2 text-3xl font-bold text-[var(--ink)]">
               {card.value}
             </p>
           </Link>

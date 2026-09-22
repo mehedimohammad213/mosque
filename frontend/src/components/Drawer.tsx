@@ -37,18 +37,18 @@ export function Drawer({
       <button
         type="button"
         aria-label="Close drawer"
-        className="absolute inset-0 bg-black/50 backdrop-blur-[2px] animate-drawer-backdrop"
+        className="absolute inset-0 bg-black/30 backdrop-blur-[1px] animate-drawer-backdrop"
         onClick={onClose}
       />
       <aside
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative flex h-full w-full ${widthClass} flex-col border-l border-[var(--line)] bg-[var(--bg-mid)] shadow-[-24px_0_60px_rgba(0,0,0,0.45)] animate-drawer-in`}
+        className={`relative flex h-full w-full ${widthClass} flex-col border-l border-[var(--line)] bg-[var(--bg-mid)] shadow-[-12px_0_40px_rgba(17,24,39,0.08)] animate-drawer-in`}
       >
         <header className="flex items-start justify-between gap-4 border-b border-[var(--line)] px-6 py-5">
           <div>
-            <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--ink)]">
+            <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--ink)]">
               {title}
             </h2>
             {description ? (
@@ -58,7 +58,7 @@ export function Drawer({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-[var(--line)] px-3 py-1.5 text-sm text-[var(--ink-muted)] transition hover:border-[var(--accent)]/40 hover:text-[var(--ink)]"
+            className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm font-medium text-[var(--ink-muted)] transition hover:border-[var(--accent)]/40 hover:text-[var(--ink)]"
           >
             Close
           </button>

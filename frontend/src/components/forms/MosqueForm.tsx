@@ -3,7 +3,7 @@
 import { type FormEvent, useState, useTransition } from "react";
 import { ApiError, createMosque, updateMosque } from "@/lib/api";
 import type { Mosque, MosqueStatus } from "@/lib/types";
-import { Alert, Field, fieldClass } from "@/components/ui";
+import { Alert, DetailField, DetailGrid, Field, fieldClass } from "@/components/ui";
 
 const statuses: MosqueStatus[] = [
   "pending",
@@ -61,37 +61,54 @@ export function MosqueForm({
     });
   }
 
+  if (readOnly) {
+    return (
+      <DetailGrid>
+        <DetailField label="Name" value={initial?.name} className="sm:col-span-2" />
+        <DetailField label="Name (Bangla)" value={initial?.name_bn} className="sm:col-span-2" />
+        <DetailField label="Division" value={initial?.division} />
+        <DetailField label="District" value={initial?.district} />
+        <DetailField label="Upazila" value={initial?.upazila} />
+        <DetailField label="Area" value={initial?.area} />
+        <DetailField label="Address" value={initial?.address} className="sm:col-span-2" />
+        <DetailField label="Phone" value={initial?.phone} />
+        <DetailField label="Email" value={initial?.email} />
+        <DetailField label="Status" value={initial?.status} />
+      </DetailGrid>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
       <Field label="Name *" className="sm:col-span-2">
-        <input name="name" required disabled={readOnly} defaultValue={initial?.name || ""} className={fieldClass} />
+        <input name="name" required defaultValue={initial?.name || ""} className={fieldClass} />
       </Field>
       <Field label="Name (Bangla)" className="sm:col-span-2">
-        <input name="name_bn" disabled={readOnly} defaultValue={initial?.name_bn || ""} className={fieldClass} />
+        <input name="name_bn" defaultValue={initial?.name_bn || ""} className={fieldClass} />
       </Field>
       <Field label="Division *">
-        <input name="division" required disabled={readOnly} defaultValue={initial?.division || ""} className={fieldClass} />
+        <input name="division" required defaultValue={initial?.division || ""} className={fieldClass} />
       </Field>
       <Field label="District *">
-        <input name="district" required disabled={readOnly} defaultValue={initial?.district || ""} className={fieldClass} />
+        <input name="district" required defaultValue={initial?.district || ""} className={fieldClass} />
       </Field>
       <Field label="Upazila">
-        <input name="upazila" disabled={readOnly} defaultValue={initial?.upazila || ""} className={fieldClass} />
+        <input name="upazila" defaultValue={initial?.upazila || ""} className={fieldClass} />
       </Field>
       <Field label="Area">
-        <input name="area" disabled={readOnly} defaultValue={initial?.area || ""} className={fieldClass} />
+        <input name="area" defaultValue={initial?.area || ""} className={fieldClass} />
       </Field>
       <Field label="Address" className="sm:col-span-2">
-        <textarea name="address" rows={3} disabled={readOnly} defaultValue={initial?.address || ""} className={fieldClass} />
+        <textarea name="address" rows={3} defaultValue={initial?.address || ""} className={fieldClass} />
       </Field>
       <Field label="Phone">
-        <input name="phone" disabled={readOnly} defaultValue={initial?.phone || ""} className={fieldClass} />
+        <input name="phone" defaultValue={initial?.phone || ""} className={fieldClass} />
       </Field>
       <Field label="Email">
-        <input name="email" type="email" disabled={readOnly} defaultValue={initial?.email || ""} className={fieldClass} />
+        <input name="email" type="email" defaultValue={initial?.email || ""} className={fieldClass} />
       </Field>
       <Field label="Status">
-        <select name="status" disabled={readOnly} defaultValue={initial?.status || "pending"} className={fieldClass}>
+        <select name="status" defaultValue={initial?.status || "pending"} className={fieldClass}>
           {statuses.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
@@ -100,24 +117,22 @@ export function MosqueForm({
 
       {error ? <div className="sm:col-span-2"><Alert>{error}</Alert></div> : null}
 
-      {!readOnly ? (
-        <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={pending}
-            className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--bg-deep)] disabled:opacity-60"
-          >
-            {pending ? "Saving…" : mode === "create" ? "Create" : "Save changes"}
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm text-[var(--ink-muted)] hover:text-[var(--ink)]"
-          >
-            Cancel
-          </button>
-        </div>
-      ) : null}
+      <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
+        <button
+          type="submit"
+          disabled={pending}
+          className="rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition hover:bg-[var(--accent-soft)] disabled:opacity-60"
+        >
+          {pending ? "Saving…" : mode === "create" ? "Create" : "Save changes"}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-lg border border-[var(--line)] px-5 py-2.5 text-sm font-medium text-[var(--ink-muted)] transition hover:text-[var(--ink)]"
+        >
+          Cancel
+        </button>
+      </div>
     </form>
   );
 }

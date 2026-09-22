@@ -1,17 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --bg-deep: #061a14;
-  --bg-mid: #0c2f24;
-  --bg-lift: #134032;
-  --ink: #e8f2ec;
-  --ink-muted: #9bb5a8;
-  --accent: #c4a35a;
-  --accent-soft: #d8c08a;
-  --line: rgba(232, 242, 236, 0.12);
-  --danger: #e07a6a;
+  --bg-deep: #f3faf6;
+  --bg-mid: #ffffff;
+  --bg-lift: #ffffff;
+  --ink: #111827;
+  --ink-muted: #6b7280;
+  --accent: #134032;
+  --accent-soft: #1a5240;
+  --accent-muted: #e8f2ec;
+  --accent-deep: #061a14;
+  --line: #e5e7eb;
+  --danger: #ef4444;
   --ok: #6fbf92;
-  --font-display: var(--font-fraunces), Georgia, serif;
+  --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.04);
+  --shadow-md: 0 4px 16px rgba(17, 24, 39, 0.06);
+  --shadow-lg: 0 12px 40px rgba(17, 24, 39, 0.08);
+  --font-display: var(--font-figtree), system-ui, sans-serif;
   --font-body: var(--font-figtree), system-ui, sans-serif;
 }
 
@@ -23,6 +28,8 @@
   --color-ink-muted: var(--ink-muted);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-muted: var(--accent-muted);
+  --color-accent-deep: var(--accent-deep);
   --color-line: var(--line);
   --color-danger: var(--danger);
   --color-ok: var(--ok);
@@ -43,21 +50,7 @@ body {
   min-height: 100vh;
   color: var(--ink);
   font-family: var(--font-body);
-  background:
-    radial-gradient(ellipse 90% 60% at 10% -10%, rgba(196, 163, 90, 0.18), transparent 50%),
-    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(111, 191, 146, 0.12), transparent 45%),
-    linear-gradient(165deg, var(--bg-deep) 0%, var(--bg-mid) 48%, #0a241c 100%);
-  background-attachment: fixed;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.35;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8f2ec' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  z-index: 0;
+  background: var(--bg-deep);
 }
 
 a {
@@ -66,13 +59,13 @@ a {
 }
 
 ::selection {
-  background: rgba(196, 163, 90, 0.35);
+  background: rgba(19, 64, 50, 0.2);
 }
 
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -90,11 +83,11 @@ a {
 }
 
 .animate-rise {
-  animation: rise-in 0.7s ease both;
+  animation: rise-in 0.5s ease both;
 }
 
 .animate-fade {
-  animation: fade-in 0.9s ease both;
+  animation: fade-in 0.6s ease both;
 }
 
 .delay-1 {

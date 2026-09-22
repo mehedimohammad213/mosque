@@ -4,43 +4,170 @@ import type { ReactNode } from "react";
 export function PageHeader({
   title,
   description,
-  actionHref,
-  actionLabel,
-  onAction,
 }: {
   title: string;
   description?: string;
-  actionHref?: string;
-  actionLabel?: string;
-  onAction?: () => void;
 }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="font-[family-name:var(--font-display)] text-3xl text-[var(--ink)]">
-          {title}
-        </h1>
-        {description ? (
-          <p className="mt-2 text-sm text-[var(--ink-muted)]">{description}</p>
-        ) : null}
-      </div>
+    <div className="mb-6">
+      <h1 className="text-2xl font-bold tracking-tight text-[var(--ink)] md:text-[1.75rem]">
+        {title}
+      </h1>
+      {description ? (
+        <p className="mt-1 text-sm text-[var(--ink-muted)]">{description}</p>
+      ) : null}
+    </div>
+  );
+}
+
+export function StatCards({
+  items,
+}: {
+  items: { label: string; value: string | number }[];
+}) {
+  return (
+    <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((item) => (
+        <div
+          key={item.label}
+          className="rounded-xl border border-[var(--line)] bg-[var(--bg-mid)] px-5 py-4 shadow-[var(--shadow-sm)]"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-muted)]">
+            {item.label}
+          </p>
+          <p className="mt-2 text-3xl font-bold text-[var(--ink)]">{item.value}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function StatusBadge({
+  children,
+  tone = "ok",
+}: {
+  children: ReactNode;
+  tone?: "ok" | "muted" | "danger";
+}) {
+  const styles =
+    tone === "ok"
+      ? "bg-[var(--accent-muted)] text-[var(--accent-deep)]"
+      : tone === "danger"
+        ? "bg-red-50 text-[var(--danger)]"
+        : "bg-[var(--bg-deep)] text-[var(--ink-muted)]";
+  return (
+    <span
+      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${styles}`}
+    >
+      {children}
+    </span>
+  );
+}
+
+export function ListToolbar({
+  search,
+  onSearchChange,
+  searchPlaceholder = "Search…",
+  actionLabel,
+  onAction,
+  actionHref,
+}: {
+  search?: string;
+  onSearchChange?: (value: string) => void;
+  searchPlaceholder?: string;
+  actionLabel?: string;
+  onAction?: () => void;
+  actionHref?: string;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] px-4 py-3.5">
+      {onSearchChange ? (
+        <div className="relative min-w-[220px] flex-1 max-w-md">
+          <svg
+            aria-hidden
+            viewBox="0 0 20 20"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--ink-muted)]"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          >
+            <circle cx="8.5" cy="8.5" r="5.5" />
+            <path d="M13 13l3.5 3.5" strokeLinecap="round" />
+          </svg>
+          <input
+            type="search"
+            value={search ?? ""}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder={searchPlaceholder}
+            className="w-full rounded-lg border border-[var(--accent)]/20 bg-[var(--accent-muted)] py-2 pl-9 pr-3 text-sm text-[var(--ink)] outline-none transition placeholder:text-[var(--ink-muted)] focus:border-[var(--accent)] focus:bg-white focus:ring-2 focus:ring-[var(--accent)]/15"
+          />
+        </div>
+      ) : (
+        <div />
+      )}
       {actionLabel && onAction ? (
         <button
           type="button"
           onClick={onAction}
-          className="rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--bg-deep)] transition hover:bg-[var(--accent-soft)]"
+          className="rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition hover:bg-[var(--accent-soft)]"
         >
-          {actionLabel}
+          + {actionLabel}
         </button>
-      ) : actionHref && actionLabel ? (
+      ) : actionLabel && actionHref ? (
         <Link
           href={actionHref}
-          className="rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--bg-deep)] transition hover:bg-[var(--accent-soft)]"
+          className="rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition hover:bg-[var(--accent-soft)]"
         >
-          {actionLabel}
+          + {actionLabel}
         </Link>
       ) : null}
     </div>
+  );
+}
+
+export function ListPanel({
+  children,
+  footer,
+}: {
+  children: ReactNode;
+  footer?: ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--bg-mid)] shadow-[var(--shadow-sm)]">
+      {children}
+      {footer ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line)] px-4 py-3 text-sm text-[var(--ink-muted)]">
+          {footer}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export function ListFooter({
+  from,
+  to,
+  total,
+}: {
+  from: number;
+  to: number;
+  total: number;
+}) {
+  return (
+    <>
+      <p>
+        Showing {total === 0 ? 0 : from}–{to} of {total}.
+      </p>
+      <div className="flex items-center gap-2">
+        <span className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm text-[var(--ink-muted)]">
+          Previous
+        </span>
+        <span className="px-2 text-sm text-[var(--ink)]">Page 1 of 1</span>
+        <span className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-sm text-[var(--ink-muted)]">
+          Next
+        </span>
+      </div>
+    </>
   );
 }
 
@@ -53,10 +180,10 @@ export function Alert({
 }) {
   const styles =
     tone === "ok"
-      ? "border-[var(--ok)]/30 bg-[var(--ok)]/10 text-[var(--ok)]"
-      : "border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]";
+      ? "border-[var(--ok)]/25 bg-[var(--accent-muted)] text-[var(--accent-deep)]"
+      : "border-[var(--danger)]/25 bg-red-50 text-[var(--danger)]";
   return (
-    <div className={`rounded-xl border px-4 py-3 text-sm ${styles}`}>
+    <div className={`rounded-lg border px-4 py-3 text-sm ${styles}`}>
       {children}
     </div>
   );
@@ -70,17 +197,15 @@ export function EmptyState({
   hint?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[var(--line)] bg-white/[0.03] px-6 py-12 text-center">
-      <p className="font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
-        {title}
-      </p>
+    <div className="px-6 py-12 text-center">
+      <p className="text-lg font-semibold text-[var(--ink)]">{title}</p>
       {hint ? <p className="mt-2 text-sm text-[var(--ink-muted)]">{hint}</p> : null}
     </div>
   );
 }
 
 export const fieldClass =
-  "w-full rounded-xl border border-[var(--line)] bg-black/20 px-3.5 py-2.5 text-[var(--ink)] outline-none transition placeholder:text-[var(--ink-muted)]/60 focus:border-[var(--accent)]/50";
+  "w-full rounded-lg border border-[var(--accent)]/20 bg-[var(--accent-muted)] px-3.5 py-2.5 text-sm text-[var(--ink)] outline-none transition placeholder:text-[var(--ink-muted)]/70 focus:border-[var(--accent)] focus:bg-white focus:ring-2 focus:ring-[var(--accent)]/20 disabled:bg-[var(--accent-muted)]/60 disabled:text-[var(--ink-muted)]";
 
 export function Field({
   label,
@@ -93,11 +218,43 @@ export function Field({
 }) {
   return (
     <label className={`block space-y-1.5 ${className}`}>
-      <span className="text-xs uppercase tracking-[0.16em] text-[var(--ink-muted)]">
-        {label}
-      </span>
+      <span className="text-sm font-medium text-[var(--ink)]">{label}</span>
       {children}
     </label>
+  );
+}
+
+export function DetailField({
+  label,
+  value,
+  className = "",
+}: {
+  label: string;
+  value?: ReactNode;
+  className?: string;
+}) {
+  const empty =
+    value === null ||
+    value === undefined ||
+    value === "" ||
+    (typeof value === "string" && !value.trim());
+  return (
+    <div
+      className={`flex items-start justify-between gap-4 border-b border-[var(--line)] py-3 last:border-b-0 ${className}`}
+    >
+      <p className="shrink-0 text-sm font-medium text-[var(--ink-muted)]">{label}</p>
+      <p className="min-w-0 text-right text-sm font-semibold text-[var(--ink)] break-words">
+        {empty ? "—" : value}
+      </p>
+    </div>
+  );
+}
+
+export function DetailGrid({ children }: { children: ReactNode }) {
+  return (
+    <div className="rounded-xl border border-[var(--line)] bg-[var(--accent-muted)]/40 px-4">
+      {children}
+    </div>
   );
 }
 
@@ -109,19 +266,23 @@ export function DataTable({
   children: ReactNode;
 }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-[var(--line)] bg-[var(--bg-lift)]/30">
+    <div className="overflow-x-auto">
       <table className="min-w-full text-left text-sm">
-        <thead className="border-b border-[var(--line)] text-xs uppercase tracking-[0.14em] text-[var(--ink-muted)]">
+        <thead className="bg-[var(--bg-deep)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-muted)]">
           <tr>
             {headers.map((header) => (
-              <th key={header} className="px-4 py-3 font-medium">
+              <th key={header} className="px-4 py-3 font-semibold">
                 {header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody>{children}</tbody>
+        <tbody className="divide-y divide-[var(--line)]">{children}</tbody>
       </table>
     </div>
   );
+}
+
+export function RowActions({ children }: { children: ReactNode }) {
+  return <div className="flex items-center gap-3">{children}</div>;
 }

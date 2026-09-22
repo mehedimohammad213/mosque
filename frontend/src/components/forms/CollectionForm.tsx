@@ -8,7 +8,7 @@ import {
   updateWeeklyCollection,
 } from "@/lib/api";
 import type { CollectionStatus, Mosque, WeeklyCollection } from "@/lib/types";
-import { Alert, Field, fieldClass } from "@/components/ui";
+import { Alert, DetailField, DetailGrid, Field, fieldClass } from "@/components/ui";
 import type { FormMode } from "@/components/forms/MosqueForm";
 
 const statuses: CollectionStatus[] = ["draft", "published"];
@@ -62,42 +62,56 @@ export function CollectionForm({
     });
   }
 
+  if (readOnly) {
+    const mosqueName =
+      mosques.find((m) => m.id === initial?.mosque_id)?.name ||
+      (initial?.mosque_id ? `#${initial.mosque_id}` : null);
+    return (
+      <DetailGrid>
+        <DetailField label="Mosque" value={mosqueName} className="sm:col-span-2" />
+        <DetailField label="Week start" value={dateValue(initial?.week_start_date)} />
+        <DetailField label="Week end" value={dateValue(initial?.week_end_date)} />
+        <DetailField label="Amount" value={initial?.amount} />
+        <DetailField label="Status" value={initial?.status} />
+        <DetailField label="Note" value={initial?.note} className="sm:col-span-2" />
+      </DetailGrid>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
       <Field label="Mosque *" className="sm:col-span-2">
-        <select name="mosque_id" required disabled={readOnly} defaultValue={initial?.mosque_id || ""} className={fieldClass}>
+        <select name="mosque_id" required defaultValue={initial?.mosque_id || ""} className={fieldClass}>
           <option value="">Select</option>
           {mosques.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
         </select>
       </Field>
       <Field label="Week start *">
-        <input name="week_start_date" type="date" required disabled={readOnly} defaultValue={dateValue(initial?.week_start_date)} className={fieldClass} />
+        <input name="week_start_date" type="date" required defaultValue={dateValue(initial?.week_start_date)} className={fieldClass} />
       </Field>
       <Field label="Week end *">
-        <input name="week_end_date" type="date" required disabled={readOnly} defaultValue={dateValue(initial?.week_end_date)} className={fieldClass} />
+        <input name="week_end_date" type="date" required defaultValue={dateValue(initial?.week_end_date)} className={fieldClass} />
       </Field>
       <Field label="Amount *">
-        <input name="amount" type="number" step="0.01" required disabled={readOnly} defaultValue={initial?.amount || ""} className={fieldClass} />
+        <input name="amount" type="number" step="0.01" required defaultValue={initial?.amount || ""} className={fieldClass} />
       </Field>
       <Field label="Status">
-        <select name="status" disabled={readOnly} defaultValue={initial?.status || "draft"} className={fieldClass}>
+        <select name="status" defaultValue={initial?.status || "draft"} className={fieldClass}>
           {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
       </Field>
       <Field label="Note" className="sm:col-span-2">
-        <textarea name="note" rows={3} disabled={readOnly} defaultValue={initial?.note || ""} className={fieldClass} />
+        <textarea name="note" rows={3} defaultValue={initial?.note || ""} className={fieldClass} />
       </Field>
       {error ? <div className="sm:col-span-2"><Alert>{error}</Alert></div> : null}
-      {!readOnly ? (
-        <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
-          <button type="submit" disabled={pending} className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--bg-deep)] disabled:opacity-60">
-            {pending ? "Saving…" : mode === "create" ? "Create" : "Save changes"}
-          </button>
-          <button type="button" onClick={onCancel} className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm text-[var(--ink-muted)]">
-            Cancel
-          </button>
-        </div>
-      ) : null}
+      <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
+        <button type="submit" disabled={pending} className="rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition hover:bg-[var(--accent-soft)] disabled:opacity-60">
+          {pending ? "Saving…" : mode === "create" ? "Create" : "Save changes"}
+        </button>
+        <button type="button" onClick={onCancel} className="rounded-lg border border-[var(--line)] px-5 py-2.5 text-sm font-medium text-[var(--ink-muted)] transition hover:text-[var(--ink)]">
+          Cancel
+        </button>
+      </div>
     </form>
   );
 }

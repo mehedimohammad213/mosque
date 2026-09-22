@@ -37,7 +37,7 @@ export function ConfirmDialog({
       <button
         type="button"
         aria-label="Close dialog"
-        className="absolute inset-0 bg-black/55 backdrop-blur-[2px] animate-drawer-backdrop"
+        className="absolute inset-0 bg-black/30 backdrop-blur-[1px] animate-drawer-backdrop"
         onClick={onCancel}
       />
       <div
@@ -45,11 +45,11 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby="confirm-title"
         aria-describedby="confirm-message"
-        className="relative w-full max-w-md animate-rise rounded-2xl border border-[var(--line)] bg-[var(--bg-mid)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
+        className="relative w-full max-w-md animate-rise rounded-xl border border-[var(--line)] bg-[var(--bg-mid)] p-6 shadow-[var(--shadow-lg)]"
       >
         <h3
           id="confirm-title"
-          className="font-[family-name:var(--font-display)] text-2xl text-[var(--ink)]"
+          className="font-[family-name:var(--font-display)] text-xl font-bold text-[var(--ink)]"
         >
           {title}
         </h3>
@@ -61,7 +61,7 @@ export function ConfirmDialog({
             type="button"
             onClick={onCancel}
             disabled={pending}
-            className="rounded-full border border-[var(--line)] px-4 py-2 text-sm text-[var(--ink-muted)] transition hover:text-[var(--ink)] disabled:opacity-60"
+            className="rounded-lg border border-[var(--line)] px-4 py-2 text-sm font-medium text-[var(--ink-muted)] transition hover:text-[var(--ink)] disabled:opacity-60"
           >
             {cancelLabel}
           </button>
@@ -69,7 +69,7 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={pending}
-            className="rounded-full bg-[var(--danger)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+            className="rounded-lg bg-[var(--danger)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
           >
             {pending ? "Removing…" : confirmLabel}
           </button>
