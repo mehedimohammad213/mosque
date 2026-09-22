@@ -31,10 +31,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/health', healthRouter);
 app.use('/api/auth', authRouter);
 
-app.use('/api/mosques', requireAuth, mosquesRouter);
+// Public read APIs for the mobile app; writes stay auth-protected in routers.
+app.use('/api/mosques', mosquesRouter);
+app.use('/api/weekly-collections', weeklyCollectionsRouter);
+app.use('/api/fund-requests', fundRequestsRouter);
+
+// Admin-only resources
 app.use('/api/users', requireAuth, usersRouter);
-app.use('/api/weekly-collections', requireAuth, weeklyCollectionsRouter);
-app.use('/api/fund-requests', requireAuth, fundRequestsRouter);
 app.use('/api/payment-accounts', requireAuth, paymentAccountsRouter);
 
 app.use((_req: Request, res: Response) => {
