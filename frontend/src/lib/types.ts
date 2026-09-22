@@ -108,6 +108,11 @@ export interface FundRequest {
   approved_at: string | null;
   created_at: string;
   updated_at: string;
+  mosque_name?: string | null;
+  account_type?: string | null;
+  account_name?: string | null;
+  account_number?: string | null;
+  bank_name?: string | null;
 }
 
 export interface CreateFundRequestInput {

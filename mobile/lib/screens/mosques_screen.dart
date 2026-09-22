@@ -237,19 +237,10 @@ class _MosquesScreenState extends State<MosquesScreen> {
         Positioned(
           right: 14,
           bottom: bottomPad,
-          child: Column(
-            children: [
-              _RoundFab(
-                icon: Icons.explore_outlined,
-                onTap: () {},
-              ),
-              const SizedBox(height: 10),
-              _RoundFab(
-                icon: Icons.my_location,
-                iconColor: AppColors.locationBlue,
-                onTap: _goToMyLocation,
-              ),
-            ],
+          child: _RoundFab(
+            icon: Icons.my_location,
+            iconColor: AppColors.locationBlue,
+            onTap: _goToMyLocation,
           ),
         ),
 

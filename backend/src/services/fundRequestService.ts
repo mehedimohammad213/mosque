@@ -8,6 +8,27 @@ import FundRequest, {
 import AppError from '../middleware/AppError';
 import { optionalEnum, optionalNumber, requireFields } from './helpers';
 
+const fundRequestSelect = `
+  fr.*,
+  m.name AS mosque_name,
+  pa.account_type,
+  pa.account_name,
+  pa.account_number,
+  pa.bank_name
+`;
+
+const fundRequestFrom = `
+  ${FundRequest.table} fr
+  JOIN mosques m ON m.id = fr.mosque_id
+  LEFT JOIN LATERAL (
+    SELECT account_type, account_name, account_number, bank_name
+    FROM mosque_payment_accounts
+    WHERE mosque_id = fr.mosque_id AND is_active = TRUE
+    ORDER BY is_verified DESC, id ASC
+    LIMIT 1
+  ) pa ON TRUE
+`;
+
 async function listFundRequests(
   filters: FundRequestFilters = {}
 ): Promise<FundRequestRow[]> {
@@ -16,20 +37,20 @@ async function listFundRequests(
 
   if (filters.mosque_id) {
     params.push(filters.mosque_id);
-    conditions.push(`mosque_id = $${params.length}`);
+    conditions.push(`fr.mosque_id = $${params.length}`);
   }
   if (filters.status) {
     params.push(filters.status);
-    conditions.push(`status = $${params.length}::fund_request_status`);
+    conditions.push(`fr.status = $${params.length}::fund_request_status`);
   }
   if (filters.fund_year) {
     params.push(filters.fund_year);
-    conditions.push(`fund_year = $${params.length}`);
+    conditions.push(`fr.fund_year = $${params.length}`);
   }
 
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
   const result = await query<FundRequestRow>(
-    `SELECT * FROM ${FundRequest.table} ${where} ORDER BY id DESC`,
+    `SELECT ${fundRequestSelect} FROM ${fundRequestFrom} ${where} ORDER BY fr.id DESC`,
     params
   );
   return result.rows;
@@ -37,7 +58,7 @@ async function listFundRequests(
 
 async function getFundRequest(id: string | number): Promise<FundRequestRow> {
   const result = await query<FundRequestRow>(
-    `SELECT * FROM ${FundRequest.table} WHERE id = $1`,
+    `SELECT ${fundRequestSelect} FROM ${fundRequestFrom} WHERE fr.id = $1`,
     [id]
   );
   const row = result.rows[0];

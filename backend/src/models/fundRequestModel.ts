@@ -50,6 +50,13 @@ export interface FundRequestRow {
   approved_at: Date | null;
   created_at: Date;
   updated_at: Date;
+  /** Joined from mosques */
+  mosque_name?: string | null;
+  /** Joined from mosque_payment_accounts (primary active) */
+  account_type?: string | null;
+  account_name?: string | null;
+  account_number?: string | null;
+  bank_name?: string | null;
 }
 
 export interface CreateFundRequestInput {
