@@ -198,17 +198,18 @@ class _MosquesScreenState extends State<MosquesScreen> {
                 final p = m.mapPoint;
                 final selected = _selected?.id == m.id;
                 final latest = _latestByMosque[m.id];
-                final label = latest == null
+                final price = latest == null
                     ? 'Open'
                     : formatMoney(latest.amount);
                 return Marker(
                   point: LatLng(p.lat, p.lng),
-                  width: 92,
-                  height: 78,
+                  width: 118,
+                  height: 92,
                   alignment: Alignment.bottomCenter,
                   child: MosqueMapMarker(
                     selected: selected,
-                    label: label,
+                    name: m.name,
+                    price: price,
                     onTap: () => _selectMosque(m),
                   ),
                 );

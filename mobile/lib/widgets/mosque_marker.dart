@@ -4,13 +4,15 @@ import '../theme/app_theme.dart';
 
 class MosqueMapMarker extends StatelessWidget {
   final bool selected;
-  final String label;
+  final String name;
+  final String price;
   final VoidCallback onTap;
 
   const MosqueMapMarker({
     super.key,
     required this.selected,
-    required this.label,
+    required this.name,
+    required this.price,
     required this.onTap,
   });
 
@@ -34,7 +36,8 @@ class MosqueMapMarker extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            constraints: const BoxConstraints(maxWidth: 110),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: badgeColor,
               borderRadius: BorderRadius.circular(10),
@@ -46,15 +49,35 @@ class MosqueMapMarker extends StatelessWidget {
                 ),
               ],
             ),
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    height: 1.1,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  price,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    height: 1.1,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
