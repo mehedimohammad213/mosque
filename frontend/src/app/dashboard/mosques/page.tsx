@@ -5,6 +5,7 @@ import { ApiError, deleteMosque, listMosques } from "@/lib/api";
 import type { Mosque } from "@/lib/types";
 import { Alert, DataTable, EmptyState, PageHeader } from "@/components/ui";
 import { Drawer } from "@/components/Drawer";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { MosqueForm, type FormMode } from "@/components/forms/MosqueForm";
 
 export default function MosquesPage() {
@@ -16,6 +17,7 @@ export default function MosquesPage() {
     mode: FormMode;
     item: Mosque | null;
   }>({ open: false, mode: "create", item: null });
+  const [removeItem, setRemoveItem] = useState<Mosque | null>(null);
 
   function load() {
     startTransition(async () => {
@@ -36,14 +38,17 @@ export default function MosquesPage() {
     setDrawer({ open: false, mode: "create", item: null });
   }
 
-  function onDelete(id: number, name: string) {
-    if (!confirm(`Delete “${name}”?`)) return;
+  function confirmRemove() {
+    if (!removeItem) return;
+    const id = removeItem.id;
     startTransition(async () => {
       try {
         await deleteMosque(id);
+        setRemoveItem(null);
         load();
       } catch (err) {
         setError(err instanceof ApiError ? err.message : "Delete failed");
+        setRemoveItem(null);
       }
     });
   }
@@ -96,7 +101,7 @@ export default function MosquesPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => onDelete(row.id, row.name)}
+                    onClick={() => setRemoveItem(row)}
                     className="text-[var(--danger)] hover:opacity-80"
                   >
                     Delete
@@ -125,6 +130,14 @@ export default function MosquesPage() {
           }}
         />
       </Drawer>
+
+      <ConfirmDialog
+        open={!!removeItem}
+        message={`Are you confirm to remove this${removeItem ? ` “${removeItem.name}”` : ""}?`}
+        pending={pending}
+        onCancel={() => setRemoveItem(null)}
+        onConfirm={confirmRemove}
+      />
     </div>
   );
 }

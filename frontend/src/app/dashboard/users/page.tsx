@@ -5,6 +5,7 @@ import { ApiError, deleteUser, listUsers } from "@/lib/api";
 import type { User } from "@/lib/types";
 import { Alert, DataTable, EmptyState, PageHeader } from "@/components/ui";
 import { Drawer } from "@/components/Drawer";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import type { FormMode } from "@/components/forms/MosqueForm";
 import { UserForm } from "@/components/forms/UserForm";
 
@@ -17,6 +18,7 @@ export default function UsersPage() {
     mode: FormMode;
     item: User | null;
   }>({ open: false, mode: "create", item: null });
+  const [removeItem, setRemoveItem] = useState<User | null>(null);
 
   function load() {
     startTransition(async () => {
@@ -37,14 +39,17 @@ export default function UsersPage() {
     setDrawer({ open: false, mode: "create", item: null });
   }
 
-  function onDelete(id: number, name: string) {
-    if (!confirm(`Delete user “${name}”?`)) return;
+  function confirmRemove() {
+    if (!removeItem) return;
+    const id = removeItem.id;
     startTransition(async () => {
       try {
         await deleteUser(id);
+        setRemoveItem(null);
         load();
       } catch (err) {
         setError(err instanceof ApiError ? err.message : "Delete failed");
+        setRemoveItem(null);
       }
     });
   }
@@ -74,7 +79,7 @@ export default function UsersPage() {
                 <div className="flex gap-3">
                   <button type="button" onClick={() => setDrawer({ open: true, mode: "view", item: row })} className="text-[var(--ink-muted)]">View</button>
                   <button type="button" onClick={() => setDrawer({ open: true, mode: "edit", item: row })} className="text-[var(--accent-soft)]">Edit</button>
-                  <button type="button" onClick={() => onDelete(row.id, row.name)} className="text-[var(--danger)]">Delete</button>
+                  <button type="button" onClick={() => setRemoveItem(row)} className="text-[var(--danger)]">Delete</button>
                 </div>
               </td>
             </tr>
@@ -94,6 +99,14 @@ export default function UsersPage() {
           }}
         />
       </Drawer>
+
+      <ConfirmDialog
+        open={!!removeItem}
+        message={`Are you confirm to remove this${removeItem ? ` “${removeItem.name}”` : ""}?`}
+        pending={pending}
+        onCancel={() => setRemoveItem(null)}
+        onConfirm={confirmRemove}
+      />
     </div>
   );
 }

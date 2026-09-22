@@ -5,6 +5,7 @@ import { ApiError, deleteFundRequest, listFundRequests } from "@/lib/api";
 import type { FundRequest } from "@/lib/types";
 import { Alert, DataTable, EmptyState, PageHeader } from "@/components/ui";
 import { Drawer } from "@/components/Drawer";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import type { FormMode } from "@/components/forms/MosqueForm";
 import { RequestForm } from "@/components/forms/RequestForm";
 
@@ -17,6 +18,7 @@ export default function RequestsPage() {
     mode: FormMode;
     item: FundRequest | null;
   }>({ open: false, mode: "create", item: null });
+  const [removeItem, setRemoveItem] = useState<FundRequest | null>(null);
 
   function load() {
     startTransition(async () => {
@@ -37,14 +39,17 @@ export default function RequestsPage() {
     setDrawer({ open: false, mode: "create", item: null });
   }
 
-  function onDelete(id: number, title: string) {
-    if (!confirm(`Delete request “${title}”?`)) return;
+  function confirmRemove() {
+    if (!removeItem) return;
+    const id = removeItem.id;
     startTransition(async () => {
       try {
         await deleteFundRequest(id);
+        setRemoveItem(null);
         load();
       } catch (err) {
         setError(err instanceof ApiError ? err.message : "Delete failed");
+        setRemoveItem(null);
       }
     });
   }
@@ -79,7 +84,7 @@ export default function RequestsPage() {
                 <div className="flex gap-3">
                   <button type="button" onClick={() => setDrawer({ open: true, mode: "view", item: row })} className="text-[var(--ink-muted)]">View</button>
                   <button type="button" onClick={() => setDrawer({ open: true, mode: "edit", item: row })} className="text-[var(--accent-soft)]">Edit</button>
-                  <button type="button" onClick={() => onDelete(row.id, row.title)} className="text-[var(--danger)]">Delete</button>
+                  <button type="button" onClick={() => setRemoveItem(row)} className="text-[var(--danger)]">Delete</button>
                 </div>
               </td>
             </tr>
@@ -99,6 +104,14 @@ export default function RequestsPage() {
           }}
         />
       </Drawer>
+
+      <ConfirmDialog
+        open={!!removeItem}
+        message={`Are you confirm to remove this${removeItem ? ` “${removeItem.title}”` : ""}?`}
+        pending={pending}
+        onCancel={() => setRemoveItem(null)}
+        onConfirm={confirmRemove}
+      />
     </div>
   );
 }

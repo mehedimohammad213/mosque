@@ -5,6 +5,7 @@ import { ApiError, deleteWeeklyCollection, listWeeklyCollections } from "@/lib/a
 import type { WeeklyCollection } from "@/lib/types";
 import { Alert, DataTable, EmptyState, PageHeader } from "@/components/ui";
 import { Drawer } from "@/components/Drawer";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import type { FormMode } from "@/components/forms/MosqueForm";
 import { CollectionForm } from "@/components/forms/CollectionForm";
 
@@ -17,6 +18,7 @@ export default function CollectionsPage() {
     mode: FormMode;
     item: WeeklyCollection | null;
   }>({ open: false, mode: "create", item: null });
+  const [removeItem, setRemoveItem] = useState<WeeklyCollection | null>(null);
 
   function load() {
     startTransition(async () => {
@@ -37,14 +39,17 @@ export default function CollectionsPage() {
     setDrawer({ open: false, mode: "create", item: null });
   }
 
-  function onDelete(id: number) {
-    if (!confirm("Delete this collection?")) return;
+  function confirmRemove() {
+    if (!removeItem) return;
+    const id = removeItem.id;
     startTransition(async () => {
       try {
         await deleteWeeklyCollection(id);
+        setRemoveItem(null);
         load();
       } catch (err) {
         setError(err instanceof ApiError ? err.message : "Delete failed");
+        setRemoveItem(null);
       }
     });
   }
@@ -80,7 +85,7 @@ export default function CollectionsPage() {
                 <div className="flex gap-3">
                   <button type="button" onClick={() => setDrawer({ open: true, mode: "view", item: row })} className="text-[var(--ink-muted)]">View</button>
                   <button type="button" onClick={() => setDrawer({ open: true, mode: "edit", item: row })} className="text-[var(--accent-soft)]">Edit</button>
-                  <button type="button" onClick={() => onDelete(row.id)} className="text-[var(--danger)]">Delete</button>
+                  <button type="button" onClick={() => setRemoveItem(row)} className="text-[var(--danger)]">Delete</button>
                 </div>
               </td>
             </tr>
@@ -100,6 +105,14 @@ export default function CollectionsPage() {
           }}
         />
       </Drawer>
+
+      <ConfirmDialog
+        open={!!removeItem}
+        message="Are you confirm to remove this?"
+        pending={pending}
+        onCancel={() => setRemoveItem(null)}
+        onConfirm={confirmRemove}
+      />
     </div>
   );
 }
