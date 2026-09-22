@@ -100,8 +100,8 @@ export function MosqueForm({
 
       {error ? <div className="sm:col-span-2"><Alert>{error}</Alert></div> : null}
 
-      <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
-        {!readOnly ? (
+      {!readOnly ? (
+        <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
           <button
             type="submit"
             disabled={pending}
@@ -109,15 +109,15 @@ export function MosqueForm({
           >
             {pending ? "Saving…" : mode === "create" ? "Create" : "Save changes"}
           </button>
-        ) : null}
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm text-[var(--ink-muted)] hover:text-[var(--ink)]"
-        >
-          {readOnly ? "Close" : "Cancel"}
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm text-[var(--ink-muted)] hover:text-[var(--ink)]"
+          >
+            Cancel
+          </button>
+        </div>
+      ) : null}
     </form>
   );
 }

@@ -88,16 +88,16 @@ export function CollectionForm({
         <textarea name="note" rows={3} disabled={readOnly} defaultValue={initial?.note || ""} className={fieldClass} />
       </Field>
       {error ? <div className="sm:col-span-2"><Alert>{error}</Alert></div> : null}
-      <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
-        {!readOnly ? (
+      {!readOnly ? (
+        <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2">
           <button type="submit" disabled={pending} className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--bg-deep)] disabled:opacity-60">
             {pending ? "Saving…" : mode === "create" ? "Create" : "Save changes"}
           </button>
-        ) : null}
-        <button type="button" onClick={onCancel} className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm text-[var(--ink-muted)]">
-          {readOnly ? "Close" : "Cancel"}
-        </button>
-      </div>
+          <button type="button" onClick={onCancel} className="rounded-full border border-[var(--line)] px-5 py-2.5 text-sm text-[var(--ink-muted)]">
+            Cancel
+          </button>
+        </div>
+      ) : null}
     </form>
   );
 }
