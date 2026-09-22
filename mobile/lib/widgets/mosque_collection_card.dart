@@ -23,11 +23,13 @@ class MosqueCollectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final preview = collections.take(5).toList();
+    final maxCardHeight = MediaQuery.sizeOf(context).height * 0.42;
 
     return Material(
       color: Colors.transparent,
       child: Container(
         margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        constraints: BoxConstraints(maxHeight: maxCardHeight),
         padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -73,6 +75,8 @@ class MosqueCollectionCard extends StatelessWidget {
                       Text(
                         mosque.name,
                         style: Theme.of(context).textTheme.titleLarge,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -87,6 +91,8 @@ class MosqueCollectionCard extends StatelessWidget {
                       Text(
                         'Status: ${statusLabel(mosque.status)}',
                         style: Theme.of(context).textTheme.bodySmall,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
@@ -132,7 +138,7 @@ class MosqueCollectionCard extends StatelessWidget {
               )
             else
               SizedBox(
-                height: 78,
+                height: 72,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: preview.length,
@@ -143,8 +149,8 @@ class MosqueCollectionCard extends StatelessWidget {
                     return Container(
                       width: 92,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 10,
+                        horizontal: 6,
+                        vertical: 8,
                       ),
                       decoration: BoxDecoration(
                         color: highlight ? AppColors.gold : const Color(0xFFF3F5F4),
@@ -155,26 +161,32 @@ class MosqueCollectionCard extends StatelessWidget {
                         children: [
                           Text(
                             formatDateLabel(c.weekStartDate),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               color: highlight ? Colors.white70 : AppColors.inkMuted,
                             ),
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            formatMoney(c.amount),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: highlight ? Colors.white : AppColors.ink,
+                          const SizedBox(height: 4),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              formatMoney(c.amount),
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: highlight ? Colors.white : AppColors.ink,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 2),
                           Text(
                             statusLabel(c.status),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
@@ -190,6 +202,7 @@ class MosqueCollectionCard extends StatelessWidget {
             const SizedBox(height: 12),
             SizedBox(
               height: 46,
+              width: double.infinity,
               child: FilledButton(
                 onPressed: () {},
                 style: FilledButton.styleFrom(
@@ -202,6 +215,8 @@ class MosqueCollectionCard extends StatelessWidget {
                   preview.isEmpty
                       ? 'No collections'
                       : 'Latest ${formatMoney(preview.first.amount)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
